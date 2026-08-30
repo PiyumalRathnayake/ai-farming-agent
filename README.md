@@ -1,9 +1,8 @@
-# Fullstack App
+# AI Farming Agent
 
-Starter repository organized into separate frontend and backend workspaces.
+An AI-powered farming application organized into separate frontend and backend workspaces.
 
 ## Structure
 
 - `frontend/` — client-side application
 - `backend/` — server-side application and APIs
-
