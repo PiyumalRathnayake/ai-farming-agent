@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: ai-farming-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: farmer
+      POSTGRES_PASSWORD: farmer_password
+      POSTGRES_DB: ai_farming
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U farmer -d ai_farming"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
