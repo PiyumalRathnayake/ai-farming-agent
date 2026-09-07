@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from core.security import hash_password
 
 from database.session import get_db
 from models.user import User
@@ -22,8 +23,9 @@ async def create_user(
     payload: UserCreate,
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    values = payload.model_dump()
-    values["email"] = str(payload.email)
+    values = payload.model_dump(exclude={"password"})
+    values["email"] = str(payload.email).lower()
+    values["hashed_password"] = hash_password(payload.password)
 
     existing = await db.scalar(select(User).where(User.email == values["email"]))
     if existing:
@@ -63,9 +65,11 @@ async def update_user(
 ) -> User:
     user = await get_record_or_404(db, User, user_id)
     changes = payload.model_dump(exclude_unset=True, exclude_none=True)
-
+    password = changes.pop("password", None)
+    if password:
+        changes["hashed_password"] = hash_password(password)
     if "email" in changes:
-        changes["email"] = str(changes["email"])
+        changes["email"] = str(changes["email"]).lower()
         duplicate = await db.scalar(
             select(User).where(
                 User.email == changes["email"],
