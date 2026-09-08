@@ -8,6 +8,7 @@ from api.forecast_history import router as forecast_history_router
 from api.users import router as users_router
 from database.session import engine
 from api.auth import router as auth_router
+from api.weather import router as weather_router
 
 
 @asynccontextmanager
@@ -22,6 +23,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(chat_history_router)
 app.include_router(forecast_history_router)
+app.include_router(weather_router)
 
 
 @app.get("/", response_class=PlainTextResponse)
